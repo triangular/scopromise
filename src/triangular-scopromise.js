@@ -19,9 +19,12 @@
         // not just leaving array of nulls
         _isArray(dst) && dst.splice(0);
 
-        // TODO: are $ and $$ fields removed ??
+        // this line is also different than ngResource - it clears
+        // all properties that do not start with '$' or '_'
         _forEach(dst, function (value, key) {
-            delete dst[key];
+            if (key.charAt(0) !== '$' && key.charAt(0) !== '_') {
+                delete dst[key];
+            }
         });
 
         return dst;
@@ -46,7 +49,7 @@
      */
     app.factory('$scopromise', ['$log', function ($log) {
 
-        return function (promise, scopromise, clear) {
+        return function (promise, scopromise) {
             scopromise = scopromise || {};
 
             _extend(scopromise, {
@@ -56,15 +59,18 @@
 
             promise.then(
                 function (data) {
-                    clear && _shallowClear(scopromise);
-                    _shallowCopy(data, scopromise);
+                    return _shallowCopy(
+                        data,
+                        _shallowClear(scopromise)
+                    );
                 },
                 function (status) {
+                    // TODO: maybe some log levels e.g. (null|'DEBUG'|'WARN')
                     $log.warn('$scopromise rejected: ', status);
                 }
             ).finally(function () {
-                    scopromise.$resolved = true;
-                });
+                scopromise.$resolved = true;
+            });
 
             return scopromise;
 
