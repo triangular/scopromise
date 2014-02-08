@@ -34,7 +34,7 @@ module.exports = function(grunt) {
                 "unused": true,
                 "white": true
             },
-            default: ['dev/triangular-scopromise.js']
+            default: ['src/triangular-scopromise.js']
         },
 
         uglify: {
@@ -43,8 +43,7 @@ module.exports = function(grunt) {
             },
             my_target: {
                 files: {
-                    'demo/lib/triangular-scopromise/triangular-scopromise.min.js': ['dev/triangular-scopromise.js'],
-                    'dist/triangular-scopromise.min.js': ['dev/triangular-scopromise.js']
+                    'dist/triangular-scopromise.min.js': ['src/triangular-scopromise.js']
                 }
             }
         },
@@ -52,9 +51,8 @@ module.exports = function(grunt) {
         copy: {
             main: {
                 files: [
-                    // includes files within path and its sub-directories
-                    {expand: true, src: ['dev/triangular-scopromise.js'], dest: 'demo/lib/triangular-scopromise/triangular-scopromise.js'},
-                    {expand: true, src: ['dev/triangular-scopromise.js'], dest: 'dist/triangular-scopromise.js'}
+                    {src: ['src/triangular-scopromise.js'], dest: 'demo/lib/triangular-scopromise/triangular-scopromise.js'},
+                    {src: ['src/triangular-scopromise.js'], dest: 'dist/triangular-scopromise.js'}
                 ]
             }
         }
