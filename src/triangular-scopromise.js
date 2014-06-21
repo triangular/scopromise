@@ -19,12 +19,8 @@
         // not just leaving array of nulls
         _isArray(dst) && dst.splice(0);
 
-        // this line is also different than ngResource - it clears
-        // all properties that do not start with '$' or '_'
         _forEach(dst, function (value, key) {
-            if (key.charAt(0) !== '$' && key.charAt(0) !== '_') {
-                delete dst[key];
-            }
+            delete dst[key];
         });
 
         return dst;
@@ -47,28 +43,26 @@
     /**
      * the $scopromise factory itself:
      */
-    app.factory('$scopromise', ['$log', function ($log) {
+    app.factory('$scopromise', ['$log', '$q', function ($log, $q) {
 
-        return function (promise, scopromise) {
+        return function (promise, scopromise, clear) {
             scopromise = scopromise || {};
 
             _extend(scopromise, {
-                $promise: promise,
+                $promise: promise.then(
+                    function (data) {
+                        clear && _shallowClear(scopromise);
+                        return _shallowCopy(data, scopromise);
+                    },
+                    function (config) {
+                        $log.warn('$scopromise rejected: ', config.status);
+                        return $q.reject(config);
+                    }
+                ),
                 $resolved: false
             });
 
-            promise.then(
-                function (data) {
-                    return _shallowCopy(
-                        data,
-                        _shallowClear(scopromise)
-                    );
-                },
-                function (status) {
-                    // TODO: maybe some log levels e.g. (null|'DEBUG'|'WARN')
-                    $log.warn('$scopromise rejected: ', status);
-                }
-            ).finally(function () {
+            scopromise.$promise['finally'](function () {
                 scopromise.$resolved = true;
             });
 
