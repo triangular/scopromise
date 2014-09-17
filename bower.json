@@ -1,7 +1,19 @@
 {
-  "name": "triangular-scopromise",
-  "version": "0.0.5",
+  "name": "tri-angular-scopromise",
+  "version": "0.1.0",
+
+  "main": [
+    "dist/*.js",
+    "dist/*.map"
+  ],
+  "ignore": [
+    "demo/",
+    "Gruntfile.js",
+    "CONTRIBUTING.md",
+    ".gitignore",
+    ".bowerrc"
+  ],
   "dependencies": {
-    "angular": "~1.2.8"
+    "angular": "1.2.24"
   }
 }

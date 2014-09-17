@@ -39,7 +39,8 @@ module.exports = function(grunt) {
 
         uglify: {
             options: {
-                report: 'min'
+                report: 'gzip',
+                sourceMap: true
             },
             my_target: {
                 files: {

@@ -1,5 +1,4 @@
-node_modules/
-demo/vendor/
-demo/lib/
-dist/
-.idea/
+node_modules
+demo/vendor
+demo/lib
+.idea
