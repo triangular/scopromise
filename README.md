@@ -10,6 +10,15 @@ Powerful `$scope` oriented angular `$q` promise wrapper
 
 ***
 
+Install
+-------
+
+```
+bower install tri-angular-scopromise
+```
+
+***
+
 Documentation
 -------------
 
