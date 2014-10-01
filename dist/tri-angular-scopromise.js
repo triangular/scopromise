@@ -26,8 +26,6 @@
         return dst;
     };
 
-    // TODO: check if $method fields are copied from $resource.$promise
-    // (i think they should be, $promise, and $resolved shouldn't)
     var _shallowCopy = function (src, dst) {
         var key;
 
@@ -43,9 +41,9 @@
     /**
      * the $scopromise factory itself:
      */
-    app.factory('$scopromise', ['$log', '$q', function ($log, $q) {
+    app.factory('$scopromise', ['$q', function ($q) {
 
-        return function (promise, scopromise, clear) {
+        return function (promise, scopromise, clear) { // should we make clearing optional or always ?
             scopromise = scopromise || {};
 
             _extend(scopromise, {
@@ -55,7 +53,6 @@
                         return _shallowCopy(data, scopromise);
                     },
                     function (config) {
-                        $log.warn('$scopromise rejected: ', config.status);
                         return $q.reject(config);
                     }
                 ),
@@ -71,4 +68,4 @@
         };
     }]);
 
-}(angular, angular.module('triScopromise', [])));
+}(angular, angular.module('triNgScopromise', ['ng'])));
