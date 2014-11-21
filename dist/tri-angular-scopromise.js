@@ -9,28 +9,44 @@
     var _extend = ng.extend;
 
     /**
-     * Create a shallow copy of an object and conditionally clear other fields from the destination
-     * based on https://github.com/angular/angular.js/blob/master/src/ngResource/resource.js
+     * @ngdoc   function
+     * @name    _shallowClear
+     * @param   {Object|Array} dst
      */
-
     var _shallowClear = function (dst) {
 
-        // this line is different than ngResource - it clears array totally,
-        // not just leaving array of nulls
-        _isArray(dst) && dst.splice(0);
+        if (_isArray(dst)) {
 
-        _forEach(dst, function (value, key) {
-            delete dst[key];
-        });
+            // clear array totally not just leaving array of nulls (as in _forEach way)
+            dst.splice(0);
+
+        } else {
+
+            // all key => value pairs in object (or all index => value pairs in array, but that's not the case)
+            _forEach(dst, function (value, key) {
+                if (key.charAt(0) !== '$') {
+                    delete dst[key];
+                }
+            });
+
+        }
 
         return dst;
     };
 
+    /**
+     * @ngdoc   function
+     * @name    _shallowCopy
+     * @param   {Object|Array} src
+     * @param   {Object|Array} dst
+     */
     var _shallowCopy = function (src, dst) {
         var key;
 
+        // all object keys or array indexes
         for (key in src) {
-            if (src.hasOwnProperty(key) && key.charAt(0) !== '$' && key.charAt(1) !== '$') {
+            // do not touch proto nor angular internal methods
+            if (src.hasOwnProperty(key) && key.charAt(0) !== '$') {
                 dst[key] = src[key];
             }
         }
@@ -39,31 +55,42 @@
     };
 
     /**
-     * the $scopromise factory itself:
+     * @ngdoc   service
+     * @name    $scopromise
      */
-    app.factory('$scopromise', ['$q', function ($q) {
+    app.factory('$scopromise', ['$q', '$log', function ($q, $log) {
+        /**
+         * @param   {Object}            [model]      Model to be wrapped in 'Future'
+         * @param   {Promise|Object}    promise      Future resolving PromiseLikeThingOrAnyThing
+         */
+        return function (model, promise) {
+            if (!model && !promise) {
+                $log.error(new Error('$scopromise needs at least one argument!'));
+            }
 
-        return function (promise, scopromise, clear) { // should we make clearing optional or always ?
-            scopromise = scopromise || {};
+            // pass anything if using one arg
+            if (!promise) {
+                promise = model;
+                model = {};
+            }
 
-            _extend(scopromise, {
+            // any promise like thing or just data
+            promise = $q.when(promise);
+
+            _extend(model, {
                 $promise: promise.then(
                     function (data) {
-                        clear && _shallowClear(scopromise);
-                        return _shallowCopy(data, scopromise);
-                    },
-                    function (config) {
-                        return $q.reject(config);
-                    }
-                ),
+                        // just extending promise and resolved or override old model
+                        return data === model ? data : _shallowCopy(data, _shallowClear(model));
+                    }, $q.reject),
                 $resolved: false
             });
 
-            scopromise.$promise['finally'](function () {
-                scopromise.$resolved = true;
+            model.$promise['finally'](function () {
+                model.$resolved = true;
             });
 
-            return scopromise;
+            return model;
 
         };
     }]);
