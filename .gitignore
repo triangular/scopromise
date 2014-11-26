@@ -1,4 +1,7 @@
+.idea
+.DS_Store
+
+projectFilesBackup
 node_modules
 demo/vendor
 demo/lib
-.idea

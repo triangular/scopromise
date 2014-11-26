@@ -1,69 +1,42 @@
-module.exports = function(grunt) {
+/**
+ * Gruntfile [ copied from sails.js ]
+ *
+ * This Node script is executed when you run `grunt`.
+ * It's purpose is to load the Grunt tasks in your project's `tasks`
+ * folder, and allow you to add and remove tasks as you see fit.
+ */
 
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-copy');
+module.exports = function (grunt) {
 
-    grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
+    var includeAll = require('include-all');
+    var path = require('path');
 
-        jshint: {
-            options: {
-                "camelcase": true,
-                "curly": true,
-                "expr": true,
-                "eqeqeq": false,
-                "freeze": true,
-                "globalstrict": true,
-                "globals": {
-                    "angular": false
-                },
-                "immed": true,
-                "indent": 4,
-                "latedef": true,
-                "maxdepth": 2,
-                "maxstatements": 12,
-                "maxcomplexity": 5,
-                "noarg": true,
-                "noempty": true,
-                "nonew": true,
-                "quotmark": true,
-                "strict": true,
-                "trailing": true,
-                "undef": true,
-                "unused": true,
-                "white": true
-            },
-            default: ['src/tri-angular-scopromise.js']
-        },
+    function loadTasks(relPath) {
+        return includeAll({
+            dirname: path.resolve(__dirname, relPath),
+            filter: /(.+)\.js$/
+        }) || {};
+    }
 
-        uglify: {
-            options: {
-                report: 'gzip',
-                sourceMap: true
-            },
-            my_target: {
-                files: {
-                    'dist/tri-angular-scopromise.min.js': ['src/tri-angular-scopromise.js']
-                }
-            }
-        },
-
-        copy: {
-            main: {
-                files: [
-                    {src: ['src/tri-angular-scopromise.js'], dest: 'demo/lib/tri-angular-scopromise/tri-angular-scopromise.js'},
-                    {src: ['src/tri-angular-scopromise.js'], dest: 'dist/tri-angular-scopromise.js'}
-                ]
+    function invokeConfigFn(tasks) {
+        var taskName;
+        for (taskName in tasks) {
+            if (tasks.hasOwnProperty(taskName)) {
+                tasks[taskName](grunt);
             }
         }
+    }
 
-    });
+    var taskConfigurations = loadTasks('./tasks/config');
+    var registerDefinitions = loadTasks('./tasks/register');
 
-    grunt.registerTask('default', [
-        'jshint',
-        'uglify',
-        'copy'
-    ]);
+    if (!registerDefinitions.default) {
+        registerDefinitions.default = function (grunt) {
+            grunt.registerTask('default', []);
+        };
+    }
+
+    invokeConfigFn(taskConfigurations);
+    invokeConfigFn(registerDefinitions);
 
 };
