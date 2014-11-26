@@ -25,6 +25,7 @@
 
             // all key => value pairs in object (or all index => value pairs in array, but that's not the case)
             _forEach(dst, function (value, key) {
+                /*jslint unparam: true*/
                 if (key.charAt(0) !== '$') {
                     delete dst[key];
                 }
@@ -84,18 +85,18 @@
      */
 
     app.factory('$scopromise', ['$q', '$log', function ($q, $log) {
-        return function () {
+        return function (promiseOrData, dataOrNothing) {
             var promise, model;
 
-            if (!arguments[0] && !arguments[1]) {
+            if (!promiseOrData && !dataOrNothing) {
                 $log.error(new Error('$scopromise needs at least one argument!'));
             }
 
             // pass anything if using one arg
-            if (!arguments[1]) {
+            if (!dataOrNothing) {
 
                 // any promise like thing or just data
-                promise = $q.when(arguments[0]);
+                promise = $q.when(promiseOrData);
 
                 // empty data placeholder for upcoming fulfillment
                 model = {};
@@ -103,10 +104,10 @@
             } else {
 
                 // any promise like thing or just data
-                promise = $q.when(arguments[1]);
+                promise = $q.when(dataOrNothing);
 
                 // user defined data placeholder for upcoming fulfillment
-                model = arguments[0];
+                model = promiseOrData;
 
             }
 
