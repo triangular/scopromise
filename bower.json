@@ -1,20 +1,23 @@
 {
   "name": "tri-angular-scopromise",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "main": [
     "dist/*.js",
     "dist/*.map"
   ],
   "ignore": [
+    ".gitignore",
     "demo/",
     "src/",
+    "tasks/",
     "Gruntfile.js",
-    "package.json",
     "CONTRIBUTING.md",
-    ".gitignore",
-    ".bowerrc"
+    "package.json"
   ],
   "dependencies": {
-    "angular": "1.2.24"
+    "angular": "~1.2.27"
+  },
+  "exportsOverride": {
+    "angular": {"./": ["angular.js"]}
   }
 }
