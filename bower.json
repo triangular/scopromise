@@ -15,7 +15,7 @@
     "package.json"
   ],
   "dependencies": {
-    "angular": "1.2.27"
+    "angular": "~1.2.27"
   },
   "exportsOverride": {
     "angular": {"./": ["angular.js"]}
